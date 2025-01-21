@@ -13,12 +13,12 @@ class UserService {
       throw ApiError.BadRequest(`Пользователь с email ${email} уже существует`)
     }
     const hashPassword = await bcrypt.hash(password, 3)
-    const activationLink = uuid.v4()
-    const user = await UserModel.create({ email, password: hashPassword, activationLink })
+    const verificationLink = uuid.v4()
+    const user = await UserModel.create({ email, password: hashPassword, verificationLink })
     const userDto = new UserDto(user)
     const tokens = TokenService.generateTokens({ ...userDto })
     await TokenService.saveToken(userDto.id, tokens.refreshToken)
-    await MailService.sendActivation(email, `${process.env.API_URL}/api/verify/${activationLink}`)
+    await MailService.sendActivation(email, `${process.env.API_URL}/api/verify/${verificationLink}`)
 
     return {
       ...tokens,
@@ -60,13 +60,14 @@ class UserService {
   }
 
   async refresh(refreshToken) {
+
     if (!refreshToken) {
-      throw ApiError.UnauthorizedError()
+      throw ApiError.UnAuthorizedError()
     }
     const userData = TokenService.validateRefresh(refreshToken)
     const dbToken = await TokenService.getRefreshToken(refreshToken)
     if (!userData || !dbToken) {
-      throw ApiError.UnauthorizedError()
+      throw ApiError.UnAuthorizedError()
     }
     const user = await UserModel.findById(userData.id)
     const userDto = new UserDto(user)

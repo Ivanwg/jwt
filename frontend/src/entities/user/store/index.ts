@@ -3,14 +3,20 @@ import { IUser } from '../models'
 import { AuthService } from '../services/auth'
 import { createContext, useContext } from 'react'
 
-
+// TODO - типизация ошибки
 
 class Store {
   user = {} as IUser
   isAuth = false
+  isLoading = false
+  error = ''
 
   constructor() {
     makeAutoObservable(this)
+  }
+
+  setLoading(bool: boolean) {
+    this.isLoading = bool
   }
 
   setAuth(bool: boolean) {
@@ -27,7 +33,6 @@ class Store {
       localStorage.setItem('token', response.data.accessToken)
       this.setAuth(true)
       this.setUser(response.data.user)
-      console.log(response)
     } catch (error) {
       console.log(error)
     }
@@ -39,7 +44,6 @@ class Store {
       localStorage.setItem('token', response.data.accessToken)
       this.setAuth(true)
       this.setUser(response.data.user)
-      console.log(response)
     } catch (error) {
       console.log(error)
     }
@@ -53,6 +57,22 @@ class Store {
       this.setUser({} as IUser)
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  async checkAuth() {
+    this.setLoading(true)
+    try {
+      // TODO - переделать
+      // TODO - отсутствует переотправка на refresh 
+      const response = await AuthService.refresh()
+      localStorage.setItem('token', response.data.accessToken)
+      this.setAuth(true)
+      this.setUser(response.data.user)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      this.setLoading(false)
     }
   }
 }

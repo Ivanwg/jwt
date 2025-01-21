@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { Button, Input } from '@/shared/ui'
 import { useStore } from '@/entities/user/store'
+import { observer } from 'mobx-react-lite'
 
 interface Props {
   className?: string
 }
 
-export const RegisterForm: React.FC<Props> = ({ className }) => {
+export const RegisterForm: React.FC<Props> = observer(({ className }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const {store} = useStore()
@@ -30,4 +31,4 @@ export const RegisterForm: React.FC<Props> = ({ className }) => {
       </Button>
     </form>
   </div>
-}
+})

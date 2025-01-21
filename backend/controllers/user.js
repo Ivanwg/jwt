@@ -5,6 +5,7 @@ const ApiError = require('../exceptions/api')
 class UserController {
   async register(req, res, next) {
     try {
+      // TODO - ошибки возвращать в виде словаря
       const errors = validationResult(req.body)
       if (!errors.isEmpty()) {
         return next(ApiError.BadRequest('Некорректные данные', errors.array()))
@@ -62,6 +63,7 @@ class UserController {
     try {
       const {refreshToken} = req.cookies
       const useData = await userService.refresh(refreshToken)
+      console.log(useData)
       res.cookie('refreshToken', useData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true
