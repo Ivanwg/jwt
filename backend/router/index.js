@@ -14,6 +14,6 @@ router.post('/logout', UserController.logout)
 router.get('/verify/:link', UserController.verify)
 router.get('/refresh', UserController.refresh)
 // TODO - delete 
-router.get('/users', authMiddleware, UserController.getUsers)
+// router.get('/users', authMiddleware, UserController.getUsers)
 
 module.exports = router

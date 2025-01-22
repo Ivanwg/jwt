@@ -1,6 +1,7 @@
 const userService = require('../services/user')
 const { validationResult } = require('express-validator')
 const ApiError = require('../exceptions/api')
+const ResponseSecureDto = require('../dto/response-secure')
 
 class UserController {
   async register(req, res, next) {
@@ -11,13 +12,13 @@ class UserController {
         return next(ApiError.BadRequest('Некорректные данные', errors.array()))
       }
       const { email, password } = req.body
-      const useData = await userService.register(email, password)
-      res.cookie('refreshToken', useData.refreshToken, {
+      const userData = await userService.register(email, password)
+      const responseSecureDto = new ResponseSecureDto(userData)
+      res.cookie('refreshToken', responseSecureDto.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true
       })
-      // TODO - delete refresh from
-      return res.json(useData)
+      return res.json(responseSecureDto.getSecure())
     } catch (error) {
       next(error)
     }
@@ -26,13 +27,13 @@ class UserController {
   async login(req, res, next) {
     try {
       const { email, password } = req.body
-      const useData = await userService.login(email, password)
-      res.cookie('refreshToken', useData.refreshToken, {
+      const userData = await userService.login(email, password)
+      const responseSecureDto = new ResponseSecureDto(userData)
+      res.cookie('refreshToken', responseSecureDto.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true
       })
-      // TODO - delete refresh from
-      return res.json(useData)
+      return res.json(responseSecureDto.getSecure())
     } catch (error) {
       next(error)
     }
@@ -62,14 +63,13 @@ class UserController {
   async refresh(req, res, next) {
     try {
       const {refreshToken} = req.cookies
-      const useData = await userService.refresh(refreshToken)
-      console.log(useData)
-      res.cookie('refreshToken', useData.refreshToken, {
+      const userData = await userService.refresh(refreshToken)
+      const responseSecureDto = new ResponseSecureDto(userData)
+      res.cookie('refreshToken', responseSecureDto.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true
       })
-      // TODO - delete refresh from
-      return res.json(useData)
+      return res.json(responseSecureDto.getSecure())
     } catch (error) {
       next(error)
     }

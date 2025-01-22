@@ -63,8 +63,6 @@ class Store {
   async checkAuth() {
     this.setLoading(true)
     try {
-      // TODO - переделать
-      // TODO - отсутствует переотправка на refresh 
       const response = await AuthService.refresh()
       localStorage.setItem('token', response.data.accessToken)
       this.setAuth(true)
