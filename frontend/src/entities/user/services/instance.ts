@@ -12,7 +12,6 @@ bearerApiInstance.interceptors.response.use((config) => {
   console.log(config)
   return config
 }, async (error) => {
-  console.log(error, 888888)
   const originalConfig = error.config
   if (error.response.status === 401 && originalConfig && !originalConfig._retry) {
     originalConfig._retry = true

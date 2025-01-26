@@ -2,8 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { IUser } from '../models'
 import { AuthService } from '../services/auth'
 import { createContext, useContext } from 'react'
-
-// TODO - типизация ошибки
+import axios, { AxiosError } from 'axios'
 
 class Store {
   user = {} as IUser
@@ -27,6 +26,15 @@ class Store {
     this.user = user
   }
 
+  setError(error: AxiosError | Error | unknown) {
+    if (axios.isAxiosError(error)) {
+      this.error = error.response?.data.message
+    } else {
+      console.log(error)
+      this.error = 'Что-то пошло не так...'
+    }
+  }
+
   async login(email: string, password: string) {
     try {
       const response = await AuthService.login(email, password)
@@ -34,7 +42,7 @@ class Store {
       this.setAuth(true)
       this.setUser(response.data.user)
     } catch (error) {
-      console.log(error)
+      this.setError(error)
     }
   }
 

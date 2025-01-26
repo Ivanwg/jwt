@@ -1,5 +1,5 @@
 import React from 'react';
-import { store, StoreContext } from '@/entities/user/store';
+import { store, StoreContext } from '@/entities/user';
 
 
 export const AppProvider: React.FC<React.PropsWithChildren> = ({children}) => {

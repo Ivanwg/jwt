@@ -3,7 +3,7 @@ import { AppProvider } from './providers'
 import { LoginForm, RegisterForm } from '@/features'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import { useStore } from '@/entities/user/store'
+import { useStore } from '@/entities/user'
 import { Button } from '@/shared/ui'
 
 function App() {

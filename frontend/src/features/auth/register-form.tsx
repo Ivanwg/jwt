@@ -1,34 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { cn } from '@/shared/lib/utils'
-import { Button, Input } from '@/shared/ui'
-import { useStore } from '@/entities/user/store'
+import { AuthForm, SignUpSchema, TSignUpSchema, useStore } from '@/entities/user'
 import { observer } from 'mobx-react-lite'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 interface Props {
   className?: string
 }
 
 export const RegisterForm: React.FC<Props> = observer(({ className }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const {store} = useStore()
+  const { store } = useStore()
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    store.register(email, password)
+  const form = useForm<TSignUpSchema>({
+    mode: 'onTouched',
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  
+  const onSubmit: SubmitHandler<TSignUpSchema> = (data) => {
+    store.register(data.email, data.password)
   }
 
   return <div className={cn('', className)}>
-    <form onSubmit={onSubmit} className='flex flex-col gap-3'>
-      <label>
-        <Input placeholder='Email' value={email} onChange={e => setEmail(e.target.value)} />
-      </label>
-      <label>
-        <Input placeholder='Password' value={password} onChange={e => setPassword(e.target.value)} />
-      </label>
-      <Button>
-        Зарегистрироваться
-      </Button>
-    </form>
-  </div>
+      <AuthForm form={form} onSubmit={onSubmit} btnText='Зарегистрироваться' error={store.error} />
+    </div>
 })
